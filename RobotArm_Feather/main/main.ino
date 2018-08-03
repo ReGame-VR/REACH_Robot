@@ -152,12 +152,21 @@ void loop() {
       }
 
       // Update the buffers for the base and for the arm
+<<<<<<< HEAD
       //if (from == COMPUTER_ADDRESS) {
+=======
+      if (from == COMPUTER_ADDRESS) {
+        digitalWrite(LED, HIGH);
+        memcpy(armBuf, buf, sizeof(buf));
+        digitalWrite(LED, LOW);
+      } else if (from == JOYSTICK_ADDRESS) {
+>>>>>>> 74a7ba646cf7f9d7181aaed072cbb8691890d9b2
         digitalWrite(LED, HIGH);
         for(int i = 0; i < sizeof(armBuf); i++) {
           armBuf[i] = buf[i];
         }
         digitalWrite(LED, LOW);
+<<<<<<< HEAD
       //} else if (from == JOYSTICK_ADDRESS) {
       //  digitalWrite(LED, HIGH);
       //  for(int i = 0; i < sizeof(baseBuf); i++) {
@@ -165,6 +174,9 @@ void loop() {
       //  }
       //  digitalWrite(LED, LOW);
       //}
+=======
+      }
+>>>>>>> 74a7ba646cf7f9d7181aaed072cbb8691890d9b2
 
       // Every 10 milliseconds, update all motors (is 10 ms too long?)
       //if (millis() % 10 != 0) {
