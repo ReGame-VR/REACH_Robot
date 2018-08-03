@@ -18,7 +18,7 @@
 #define RFM69_CS      8
 #define RFM69_INT     3
 #define RFM69_RST     4
-#define LED           12
+#define LED           14
 #endif
 /************ END Radio Setup ***************/
 
@@ -108,10 +108,10 @@ void setup() {
   clawServo.attach(5);
 
   // Assign base motor control IO
-  pinMode(LEFT_MOTOR_FORWARD,OUTPUT);
-  pinMode(LEFT_MOTOR_BACKWARD,OUTPUT);
-  pinMode(RIGHT_MOTOR_FORWARD,OUTPUT);
-  pinMode(RIGHT_MOTOR_BACKWARD,OUTPUT);
+  pinMode(LEFT_MOTOR_FORWARD, OUTPUT);
+  pinMode(LEFT_MOTOR_BACKWARD, OUTPUT);
+  pinMode(RIGHT_MOTOR_FORWARD, OUTPUT);
+  pinMode(RIGHT_MOTOR_BACKWARD, OUTPUT);
   pinMode(WHEEL_EN, OUTPUT);
 
   // Status LED
@@ -138,30 +138,38 @@ void loop() {
       buf[len] = {0}; // zero out remaining string
       Blink(LED, 1, 3); //blink LED 3 times, 1ms between blinks
 
+      /*
+        Serial.print("Got packet from #"); Serial.print(from);
+        Serial.print(" [RSSI :");
+        Serial.print(rf69.lastRssi());
+        Serial.print("] : ");
+        Serial.println((char*)buf);
+      */
+      
       // Send a reply back to the originator client
       if (!rf69_manager.sendtoWait(data, sizeof(data), from)) {
         //Serial.println("Sending failed (no ack)");
       }
-	  
-	  // Update the buffers for the base and for the arm
-	  if(from == COMPUTER_ADDRESS) {
-	    digitalWrite(LED, HIGH);
-	    memcpy(armBuf, buf, sizeof(buf));
-	    digitalWrite(LED, LOW);
-	  } else if (from == JOYSTICK_ADDRESS) {
-	  	digitalWrite(LED, HIGH);
-		memcpy(baseBuf, buf, sizeof(buf));
-		digitalWrite(LED, LOW);
-	  }
 
-	  // Every 10 milliseconds, update all motors (is 10 ms too long?)
-	  //if (millis() % 10 != 0) {
-	    digitalWrite(LED, HIGH);
-	    setMotors(armBuf, baseBuf);
-	    digitalWrite(LED, LOW);
-	  //} else {
-	    delay(2);
- 	  //}
+      // Update the buffers for the base and for the arm
+      if (from == COMPUTER_ADDRESS) {
+        digitalWrite(LED, HIGH);
+        memcpy(armBuf, buf, sizeof(buf));
+        digitalWrite(LED, LOW);
+      } else if (from == JOYSTICK_ADDRESS) {
+        digitalWrite(LED, HIGH);
+        memcpy(baseBuf, buf, sizeof(buf));
+        digitalWrite(LED, LOW);
+      }
+
+      // Every 10 milliseconds, update all motors (is 10 ms too long?)
+      //if (millis() % 10 != 0) {
+      digitalWrite(LED, HIGH);
+      setMotors(armBuf, baseBuf);
+      digitalWrite(LED, LOW);
+      //} else {
+      delay(2);
+      //}
     }
   }
 }
