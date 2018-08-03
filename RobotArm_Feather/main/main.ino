@@ -125,7 +125,7 @@ void setup() {
 
 void loop() {
   // Buffers for the arm and base movements
-  uint8_t armBuf[8];
+  uint8_t armBuf[10];
   uint8_t baseBuf[2];
 
   // Check for message first
@@ -142,27 +142,26 @@ void loop() {
       if (!rf69_manager.sendtoWait(data, sizeof(data), from)) {
         //Serial.println("Sending failed (no ack)");
       }
-    }
+	  
+	  // Update the buffers for the base and for the arm
+	  if(from == COMPUTER_ADDRESS) {
+	    digitalWrite(LED, HIGH);
+	    memcpy(armBuf, buf, sizeof(buf));
+	    digitalWrite(LED, LOW);
+	  } else if (from == JOYSTICK_ADDRESS) {
+	  	digitalWrite(LED, HIGH);
+		memcpy(baseBuf, buf, sizeof(buf));
+		digitalWrite(LED, LOW);
+	  }
 
-    // Update the buffers for the base and for the arm
-    // TODO: REMOVE START AND STOP BYTES? CHECK sizeof(buf) LINE FOR MATCHING ARRAY SIZES
-    if(from == COMPUTER_ADDRESS) {
-      digitalWrite(LED, HIGH);
-      memcpy(armBuf, buf, sizeof(buf));
-      digitalWrite(LED, LOW);
-    } else if (from == JOYSTICK_ADDRESS) {
-        digitalWrite(LED, HIGH);
-        memcpy(baseBuf, buf, sizeof(buf));
-        digitalWrite(LED, LOW);
-    }
-
-    // Every 10 milliseconds, update all motors (is 10 ms too long?)
-    if (millis() % 10 != 0) {
-      digitalWrite(LED, HIGH);
-      setMotors(armBuf, baseBuf);
-      digitalWrite(LED, LOW);
-    } else {
-      delay(2);
+	  // Every 10 milliseconds, update all motors (is 10 ms too long?)
+	  //if (millis() % 10 != 0) {
+	    digitalWrite(LED, HIGH);
+	    setMotors(armBuf, baseBuf);
+	    digitalWrite(LED, LOW);
+	  //} else {
+	    delay(2);
+ 	  //}
     }
   }
 }
@@ -170,7 +169,7 @@ void loop() {
 // Distribute motor controls to corresponding functions
 void setMotors(uint8_t armBuf[], uint8_t baseBuf[]) {
   // Set Motors first (since their value will hold continously)
-  setBaseMotors(baseBuf);
+  //setBaseMotors(baseBuf);
 
   // Then set servo motors
   setMoves(armBuf);
