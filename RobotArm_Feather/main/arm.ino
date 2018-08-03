@@ -87,15 +87,15 @@ void stepTo(char servo, int start, int angle, int speed) {
   }
 }
 
-void multiStepTo(int bAngle, int rAngle, int hAngle, int cAngle) {
+void multiStepTo(uint8_t bAngle, uint8_t rAngle, uint8_t hAngle, uint8_t cAngle) {
   // Find out which angle is the largest
   float maxDiff = findMax(bAngle, rAngle, hAngle, cAngle);
 
   // Make sure to divide every other motors' step by the number of the largest
-  float bStepAngle = float(difference(bAngle, trackedPosB)) / maxDiff;
-  float rStepAngle = float(difference(rAngle, trackedPosR)) / maxDiff;
-  float hStepAngle = float(difference(hAngle, trackedPosH)) / maxDiff;
-  float cStepAngle = float(difference(cAngle, trackedPosC)) / maxDiff;
+  float bStepAngle = difference(bAngle, trackedPosB) / maxDiff;
+  float rStepAngle = difference(rAngle, trackedPosR) / maxDiff;
+  float hStepAngle = difference(hAngle, trackedPosH) / maxDiff;
+  float cStepAngle = difference(cAngle, trackedPosC) / maxDiff;
 
   // Find out if step angle needs to be positive or negative
   if (bAngle < trackedPosB) {
@@ -111,10 +111,10 @@ void multiStepTo(int bAngle, int rAngle, int hAngle, int cAngle) {
     cStepAngle *= -1;
   }
 
-  //Serial.println(bStepAngle);
-  //Serial.println(rStepAngle);
-  //Serial.println(hStepAngle);
-  //Serial.println(cStepAngle);
+  //Serial.println(bAngle);
+  //Serial.println(rAngle);
+  //Serial.println(hAngle);
+  //Serial.println(cAngle);
 
   // The servo with the most travel will move in increments of one
   // and the others will move proportionally to it
@@ -137,7 +137,7 @@ void multiStepTo(int bAngle, int rAngle, int hAngle, int cAngle) {
   trackedPosC = clawServo.read();
 }
 
-int findMax(int bAngle, int rAngle, int hAngle, int cAngle) {
+int findMax(uint8_t bAngle, uint8_t rAngle, uint8_t hAngle, uint8_t cAngle) {
   // List contains the delta of the angles
   int list[] = {difference(bAngle, trackedPosB),
                 difference(rAngle, trackedPosR),
@@ -160,8 +160,8 @@ int findMax(int bAngle, int rAngle, int hAngle, int cAngle) {
   return list[3]; // Return the right most value, most
 }
 
-int difference(int angle1, int angle2) {
-  int diff = max(angle1, angle2) - min(angle1, angle2);
+float difference(uint8_t angle1, uint8_t angle2) {
+  float diff = max(angle1, angle2) - min(angle1, angle2);
   return diff;
 }
 
